@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { supabase } from '../utils/supabase';
 import validator from 'validator';
 import { sendEmail } from '../utils/sendEmail';
+import { verifyEmailContent, resetPasswordContent } from '../utils/emailTemplates';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
@@ -41,15 +42,15 @@ export const register = async (req: Request, res: Response) => {
   // Gửi email xác thực
   const verifyToken = createToken({ email }, '30m');
   const link = `http://localhost:3000/api/auth/verify-email?token=${verifyToken}`;
-  await sendEmail(email, 'Xác thực tài khoản', `<a href="${link}">Bấm vào đây để xác thực</a>`);
 
+  const emailContent = verifyEmailContent(link);
+  await sendEmail(email, 'Xác Thực Tài Khoản', emailContent);
   res.status(201).json({ message: 'Đăng ký thành công, kiểm tra email để xác thực!' });
 };
 
 // Xác thực email
 export const verifyEmail = async (req: Request, res: Response) => {
   const { token } = req.query;
-
   if (!token || typeof token !== 'string') {
     return res.status(400).json({ message: 'Thiếu token xác thực' });
   }
@@ -114,7 +115,8 @@ export const forgotPassword = async (req: Request, res: Response) => {
   const resetToken = createToken({ email }, '15m');
   const link = `http://localhost:3000/reset-password?token=${resetToken}`;
 
-  await sendEmail(email, 'Đặt lại mật khẩu', `<a href="${link}">Bấm để đặt lại mật khẩu</a>`);
+  const emailContent = resetPasswordContent(link);
+  await sendEmail(email, 'Đặt lại mật khẩu', emailContent);
 
   res.status(200).json({ message: 'Đã gửi link đặt lại mật khẩu qua email' });
 };
