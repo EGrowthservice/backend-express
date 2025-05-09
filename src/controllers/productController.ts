@@ -60,6 +60,25 @@ class ProductController {
       res.status(400).json({ message: error.message });
     }
   }
+  async searchProducts(req: Request, res: Response) {
+    try {
+      const { search, category, minPrice, maxPrice, page = 1, limit = 10 } = req.query;
+      const filters: any = {};
+  
+      if (search) filters.name = { $regex: search, $options: 'i' };
+      if (category) filters.categories = category;
+      if (minPrice || maxPrice) {
+        filters.price = {};
+        if (minPrice) filters.price.$gte = Number(minPrice);
+        if (maxPrice) filters.price.$lte = Number(maxPrice);
+      }
+  
+      const products = await ProductService.searchProducts(filters, Number(page), Number(limit));
+      res.status(200).json(products);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
 }
 
 export default new ProductController();

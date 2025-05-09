@@ -8,5 +8,6 @@ router.get('/', ProductController.getProducts);
 router.get('/:id', ProductController.getProductById);
 router.put('/:id', ProductController.updateProduct);
 router.delete('/:id', ProductController.deleteProduct);
+router.get('/search', ProductController.searchProducts);
 
 export default router;

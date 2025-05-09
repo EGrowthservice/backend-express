@@ -2,7 +2,6 @@ import Product from '../models/product';
 import { IProduct } from '../types/product.ts';
 
 class ProductService {
-  // Tạo mới một sản phẩm
   async createProduct(data: IProduct) {
     try {
       const product = new Product(data);
@@ -45,6 +44,19 @@ class ProductService {
       return await Product.findByIdAndDelete(productId);
     } catch (error) {
       throw new Error(`Error deleting product: ${error.message}`);
+    }
+  }
+  async searchProducts(filters: any, page: number, limit: number) {
+    try {
+      const skip = (page - 1) * limit;
+      const products = await Product.find(filters)
+        .populate('categories')
+        .skip(skip)
+        .limit(limit);
+      const total = await Product.countDocuments(filters);
+      return { products, total, page, limit };
+    } catch (error) {
+      throw new Error(`Error searching products: ${error.message}`);
     }
   }
 }

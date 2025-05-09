@@ -4,14 +4,22 @@ import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 import protectedRoutes from './routes/protectedRoutes';
 import productRoutes from './routes/productRoutes';
-import categoryRoutes from './routes/categoryRoutes';
+import newsRoutes from './routes/newsRoutes';
+import affiliateRoutes from './routes/affiliateRoutes';
+import fileRoutes from './routes/fileRoutes';
+import consultationRoutes from './routes/consultationRoutes';
+import projectRoutes from './routes/projectRoutes';
+import paymentRoutes from './routes/paymentRoutes';
+import donationRoutes from './routes/donationRoutes';
 // Middleware
 import { verifyToken, hasRole } from './middleware/authMiddleware';
 // Model
-import './models/productVariant'; 
-import './models/productAttribute'; 
-import './models/attribute'; 
-import './models/reviewProduct'; 
+import './models/news';
+import './models/affiliate';
+import './models/consultation';
+import './models/project';
+import './models/payment';
+import './models/donation';
 
 const app = express();
 app.use(express.json());
@@ -23,8 +31,17 @@ connectDB();
 app.use('/api/auth', authRoutes);
 app.use('/', protectedRoutes);
 
-app.use('/api/categories', verifyToken, hasRole(['admin']), categoryRoutes);
-app.use('/api/products', verifyToken, hasRole(['admin']), productRoutes);
+app.use('/api/admin/products', verifyToken, hasRole(['admin']), productRoutes);
+app.use('/api/admin/news', verifyToken, hasRole(['admin']), newsRoutes);
+
+app.use('/api/products', verifyToken,  productRoutes);
+app.use('/api/news', verifyToken, newsRoutes);
+app.use('/api/affiliates', affiliateRoutes);
+app.use('/api/files', fileRoutes);
+app.use('/api/consultations', consultationRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/donations', donationRoutes);
 
 
 // Khởi động server
